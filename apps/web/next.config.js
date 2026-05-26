@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Produces a self-contained build under .next/standalone — required for
-  // Docker / Railway deploys. Vercel ignores this and uses its own output.
-  output: 'standalone',
+  // standalone output is needed for Docker/Railway but requires symlink
+  // privileges on Windows. Only enable it in CI where that's guaranteed.
+  ...(process.env.CI ? { output: 'standalone' } : {}),
 
   transpilePackages: ['@artifact-hub/types'],
 

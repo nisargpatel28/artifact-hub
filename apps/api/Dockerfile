@@ -1,8 +1,7 @@
 # ── Stage 1: install & build ──────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
-# pnpm via corepack (ships with Node 20)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g pnpm@9.15.0
 
 WORKDIR /repo
 
@@ -24,9 +23,9 @@ WORKDIR /repo/apps/api
 RUN pnpm build
 
 # ── Stage 2: runtime ──────────────────────────────────────────────────────────
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g pnpm@9.15.0
 
 WORKDIR /repo
 
