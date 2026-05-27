@@ -4,7 +4,7 @@ import { Navbar } from '@/components/Navbar';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: { default: 'Artifact Hub', template: '%s — Artifact Hub' },
+  title: { default: 'Artifact Hub', template: '%s â€” Artifact Hub' },
   description: 'Browse and share AI-generated content',
 };
 
@@ -21,3 +21,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

@@ -7,11 +7,8 @@ export function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-80"
+          className="text-sm font-semibold text-white transition-opacity hover:opacity-80"
         >
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500 text-xs font-bold tracking-tight">
-            A
-          </span>
           Artifact Hub
         </Link>
 

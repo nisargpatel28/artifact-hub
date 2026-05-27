@@ -6,10 +6,6 @@ const nextConfig = {
 
   transpilePackages: ['@artifact-hub/types'],
 
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ?? '',
-  },
-
   // Allow <img> tags to load from any Supabase storage origin
   images: {
     remotePatterns: [
@@ -22,4 +18,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
