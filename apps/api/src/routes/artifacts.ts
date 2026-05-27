@@ -129,7 +129,7 @@ const artifactRoutes: FastifyPluginAsync = async (app) => {
 
     if (uploadError) {
       request.log.error(uploadError, 'Storage upload failed');
-      return reply.code(500).send({ error: 'File upload failed' });
+      return reply.code(500).send({ error: 'File upload failed', detail: uploadError.message });
     }
 
     const { data: { publicUrl } } = db.storage

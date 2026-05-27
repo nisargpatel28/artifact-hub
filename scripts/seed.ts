@@ -8,6 +8,10 @@
 
 import 'dotenv/config';
 
+// Allow incomplete cert chains when fetching external CDN images locally.
+// This env var is set before any fetch call and only affects this process.
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
 const API_URL = (
   process.env.NEXT_PUBLIC_API_URL ??
   process.env.API_BASE_URL ??
@@ -73,7 +77,7 @@ async function api<T>(
 
   const data = await res.json().catch(() => ({ error: res.statusText })) as Record<string, unknown>;
   if (!res.ok) {
-    throw new Error(String(data['error'] ?? `HTTP ${res.status}`));
+    throw new Error(`HTTP ${res.status} ${method} ${path} — ${JSON.stringify(data)}`);
   }
   return data as T;
 }
