@@ -14,7 +14,16 @@ export async function createApp(): Promise<FastifyInstance> {
   // Must be registered before any route that reads request.user
   app.decorateRequest('user', null);
 
-  await app.register(cors, { origin: process.env.CORS_ORIGIN ?? '*' });
+  await app.register(cors, {
+    origin: [
+      'http://localhost:3000',
+      'https://artifact-hub-web.vercel.app',
+      /\.vercel\.app$/,
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'x-api-key'],
+    credentials: true,
+  });
   await app.register(multipart);
 
   app.get('/health', async () => ({ status: 'ok' }));
