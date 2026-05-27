@@ -10,9 +10,10 @@
     "build:mcp": "pnpm --filter @artifact-hub/mcp build",
     "lint": "pnpm -r lint",
     "test": "pnpm --filter @artifact-hub/api test",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx --tsconfig scripts/tsconfig.json scripts/seed.ts"
   },
   "devDependencies": {
+    "@types/node": "^20.14.0",
     "dotenv": "^16.6.1",
     "tsx": "^4.22.3",
     "typescript": "^5.4.5"
