@@ -1,0 +1,43 @@
+Set up deployment configuration for the project.
+
+1. Create apps/api/Dockerfile:
+   - Node 20 alpine base
+   - pnpm install
+   - Build TypeScript
+   - Expose PORT
+   - CMD node dist/index.js
+
+2. Create railway.json in apps/api/:
+   {
+     "build": { "builder": "DOCKERFILE" },
+     "deploy": { "startCommand": "node dist/index.js", "healthcheckPath": "/health" }
+   }
+
+3. Create apps/web/next.config.js:
+   - output: 'standalone' for Vercel
+   - Add NEXT_PUBLIC_API_URL to env config
+
+4. Create vercel.json in apps/web/:
+   - Correctly route all paths to Next.js
+   - Set build output directory
+
+5. Create a root .env.example combining all env vars needed across apps.
+
+6. Update root package.json scripts:
+   - "build:api": build the API
+   - "build:web": build the web app
+   - "build:mcp": build the MCP server
+   - "build": run all three
+
+7. Create WRITEUP.md in the repo root with these sections filled in:
+   ## What I Built
+   ## Product Decisions
+   ## What I Chose Not to Build (and Why)
+   ## Architecture Overview  
+   ## MCP Integration
+   ## AI Features
+   ## Deployment
+   ## What I'd Do Next
+
+   Fill each section with thoughtful content based on the actual system we built.
+   Be honest about tradeoffs. 2-3 paragraphs per section max.

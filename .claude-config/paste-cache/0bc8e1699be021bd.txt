@@ -1,0 +1,56 @@
+Build the Next.js frontend in apps/web. Use Tailwind CSS, app router, TypeScript.
+Design should be clean and professional — think Linear or Vercel's aesthetic.
+Dark mode by default. No external UI component libraries.
+
+Create these pages and components:
+
+1. apps/web/src/app/layout.tsx
+   - Dark background (#0a0a0a), white text
+   - Top navbar: "Artifact Hub" logo left, "Upload" button right (links to /upload)
+   - Include a global API key context (read from localStorage key 'artifact-hub-api-key')
+
+2. apps/web/src/app/page.tsx — Gallery
+   - Hero: "Artifact Hub" h1, subtitle "Browse and share AI-generated content"
+   - Search bar (text input) + type filter (All/HTML/Image/PDF) + tag chips
+   - Grid of ArtifactCard components (3 columns desktop, 2 tablet, 1 mobile)
+   - Fetch from GET /api/artifacts on load, re-fetch on filter change
+   - Show loading skeleton cards while fetching
+
+3. apps/web/src/components/ArtifactCard.tsx
+   - Card with subtle border, hover effect (slight lift + glow)
+   - Shows: type badge (color-coded), title, description (truncated 2 lines), tags, date
+   - Click goes to /artifacts/[id]
+
+4. apps/web/src/app/artifacts/[id]/page.tsx — Detail page
+   - Left side (60%): artifact viewer
+     - HTML type: render in sandboxed <iframe>
+     - Image type: <img> tag
+     - PDF type: <iframe> with the storage URL
+   - Right side (40%):
+     - Title, description, tags, upload date
+     - "Share" button → calls POST /api/artifacts/:id/share → shows modal with copy-able link
+     - "AI Summary" button → calls GET /api/artifacts/:id/summary → shows summary in collapsible section
+     - Comments section:
+       - List of existing comments (author email, body, date)
+       - Add comment form (requires API key set)
+
+5. apps/web/src/app/upload/page.tsx — Upload page
+   - Step 1: drag-and-drop file zone (accepts .html, .pdf, .jpg, .png, .gif, .webp)
+   - Step 2: metadata form — title, description, tags (comma input with chip preview)
+   - A note: "Leave title/description empty to auto-generate with AI"
+   - API key input at top (saves to localStorage)
+   - Submit → POST /api/artifacts → redirect to /artifacts/[id] on success
+
+6. apps/web/src/app/share/[token]/page.tsx — Public share page
+   - Calls GET /api/share/:token
+   - If valid: shows artifact viewer + title/description (no comments, no actions)
+   - If expired: shows "This link has expired" message
+   - Nice for sharing with external reviewers
+
+7. apps/web/src/lib/api.ts
+   - Export typed fetch functions for all API calls
+   - Read API_URL from NEXT_PUBLIC_API_URL env var
+   - Read api key from localStorage
+
+Create apps/web/.env.example:
+NEXT_PUBLIC_API_URL=https://your-api.railway.app

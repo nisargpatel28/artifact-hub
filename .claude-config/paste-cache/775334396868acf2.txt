@@ -1,0 +1,32 @@
+Add two AI-powered features to the API using the Anthropic SDK.
+
+Install in apps/api: @anthropic-ai/sdk
+
+1. Create apps/api/src/services/ai.ts with these two functions:
+
+a) generateMetadata(fileBuffer: Buffer, fileType: string, filename: string): Promise<{ title: string, description: string, tags: string[] }>
+   - If type is 'html': extract text content (strip tags), send first 3000 chars to Claude
+   - If type is 'image': send as base64 image to Claude vision
+   - If type is 'pdf': send first 3000 bytes decoded as text
+   - Prompt: "You are helping catalog AI-generated content. Analyze this artifact and return ONLY a JSON object with: title (concise, max 60 chars), description (2-3 sentences about what this is), tags (array of 3-6 lowercase relevant tags). No markdown, no preamble, just JSON."
+   - Parse and return the JSON response
+   - On any error, return safe defaults (use filename as title, empty description, empty tags)
+
+b) summarizeFeedback(artifactTitle: string, comments: { authorEmail: string, body: string, createdAt: string }[]): Promise<string>
+   - If no comments: return "No feedback yet."
+   - Build prompt with all comments formatted as a list
+   - Prompt: "You are summarizing reviewer feedback on an AI-generated artifact titled '{title}'. Here are all comments: {comments}. Write a 2-3 sentence neutral summary of the overall feedback, key themes, and any action items mentioned. Be concise and specific."
+   - Return the text response
+
+2. Update apps/api/src/routes/artifacts.ts:
+   - In POST /api/artifacts, after receiving the file but BEFORE inserting to DB:
+     - Call generateMetadata if title/description/tags are not provided by the user
+     - If user provides title but not description/tags, only generate the missing fields
+     - This makes it optional — user can override AI suggestions
+
+3. Add GET /api/artifacts/:id/summary to apps/api/src/routes/comments.ts:
+   - Fetch the artifact and all its comments
+   - Call summarizeFeedback
+   - Return { summary: string }
+
+Add ANTHROPIC_API_KEY to apps/api/.env.example

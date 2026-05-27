@@ -1,0 +1,32 @@
+The artifact detail page shows a broken image. The image is uploaded to 
+Supabase storage but not displaying.
+
+1. Show me apps/web/src/app/artifacts/[id]/page.tsx — specifically 
+   how it renders the image (the img or Image tag)
+
+2. The issue is likely one of:
+   a) The storageUrl from Supabase is a relative path instead of full URL
+   b) Next.js Image component blocking external domains
+   c) The img tag src is undefined or malformed
+
+3. Check what the actual storageUrl looks like — add a temporary 
+   console.log in the artifact detail page:
+   console.log('artifact:', artifact)
+   Then check browser DevTools console for the storageUrl value.
+
+4. Fix the image rendering:
+   - If using Next.js <Image>, make sure next.config.js has the 
+     correct hostname pattern for your Supabase project URL
+   - If using <img>, make sure src={artifact.storageUrl} is the 
+     full https:// URL
+
+5. In apps/api/src/routes/artifacts.ts, check how storageUrl is 
+   being set when uploading to Supabase storage — it should be 
+   the full public URL like:
+   https://[project-id].supabase.co/storage/v1/object/public/artifacts/[filename]
+   
+   Get it with:
+   const { data } = supabase.storage.from('artifacts').getPublicUrl(path)
+   storageUrl = data.publicUrl
+
+Show me the relevant code sections.

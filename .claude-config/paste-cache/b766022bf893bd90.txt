@@ -1,0 +1,31 @@
+Help me finalize deployment.
+
+1. Check all environment variable references across all apps — list any that are 
+   missing from .env.example files.
+
+2. Verify the Dockerfile builds cleanly with: docker build -t artifact-hub-api apps/api/
+
+3. In apps/mcp/claude_mcp_config.json, update the config to use npx so reviewers 
+   don't need to clone the repo:
+   {
+     "mcpServers": {
+       "artifact-hub": {
+         "command": "npx",
+         "args": ["-y", "artifact-hub-mcp@latest"],
+         ...
+       }
+     }
+   }
+   (or use node with the dist path if npx publish isn't feasible)
+
+4. Create claude-sessions/ folder and add a .gitkeep
+
+5. Do a final check — list any TypeScript errors across all apps using tsc --noEmit
+
+6. Write a scripts/walkthrough.md with a step-by-step written walkthrough showing:
+   - Uploading an artifact via the web UI
+   - Browsing and filtering the gallery
+   - Viewing an artifact and reading AI-generated metadata
+   - Leaving a comment and viewing the AI feedback summary
+   - Creating a share link and opening it
+   - Using Claude Desktop via MCP to publish and search artifacts

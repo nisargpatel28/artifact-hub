@@ -1,0 +1,21 @@
+# ── Supabase (shared by api and mcp) ──────────────────────────────────────────
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# ── Anthropic (api) ───────────────────────────────────────────────────────────
+ANTHROPIC_API_KEY=sk-ant-...
+
+# ── API server (apps/api) ─────────────────────────────────────────────────────
+PORT=3001
+HOST=0.0.0.0
+BASE_URL=http://localhost:3001
+# CORS_ORIGIN=http://localhost:3000   # lock down in production
+
+# ── Web frontend (apps/web) ───────────────────────────────────────────────────
+NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+# ── MCP server (apps/mcp) ─────────────────────────────────────────────────────
+API_BASE_URL=http://localhost:3001
+API_KEY=demo-api-key-12345

@@ -1,0 +1,41 @@
+Fix the seed script TypeScript errors. The script can't find process, console, 
+fetch, Buffer, FormData because @types/node is missing and tsconfig is wrong.
+
+1. Install @types/node at the root:
+   pnpm add -D @types/node -w
+
+2. Create scripts/tsconfig.json:
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": false,
+    "skipLibCheck": true
+  },
+  "include": ["./*.ts"]
+}
+
+3. Also check if there's a root tsconfig.json — if it exists, make sure it has:
+   "types": ["node"]
+   in compilerOptions.
+
+4. Run the seed script using ts-node with the local tsconfig:
+   npx ts-node --project scripts/tsconfig.json scripts/seed.ts
+
+5. If that still fails on fetch/FormData (Node 18+ has these built-in but 
+   @types/node may not expose them without the right lib), update 
+   scripts/tsconfig.json compilerOptions to:
+   "lib": ["ES2022", "DOM"]
+   "target": "ES2022"
+   This makes DOM types (fetch, FormData, Blob) available alongside Node types.
+
+6. Make sure scripts/.env or root .env exists with:
+   API_BASE_URL=http://localhost:3001
+   API_KEY=demo-api-key-12345
+   
+   And that the seed script loads dotenv at the top. If it doesn't, add:
+   import 'dotenv/config'

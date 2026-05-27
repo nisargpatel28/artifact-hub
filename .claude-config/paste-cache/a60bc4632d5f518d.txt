@@ -1,0 +1,63 @@
+Build the full Fastify API in apps/api/src/.
+
+Create these files:
+
+1. apps/api/src/index.ts — server entry point
+   - Register @fastify/cors (allow all origins for now)
+   - Register @fastify/multipart
+   - Mount all route plugins under /api
+   - Listen on PORT from env (default 3001)
+   - Health check GET /health returns { status: 'ok' }
+
+2. apps/api/src/middleware/auth.ts
+   - Fastify preHandler that reads x-api-key header
+   - Looks up user in Supabase users table by api_key
+   - Attaches user to request object
+   - Returns 401 if missing or invalid
+   - Export as requireAuth
+
+3. apps/api/src/routes/artifacts.ts — register as plugin
+   - POST /api/artifacts
+     - requireAuth
+     - accepts multipart: file (binary) + fields: title, description, tags (comma-separated), type
+     - validates with zod
+     - uploads file to Supabase storage bucket 'artifacts' at path {userId}/{timestamp}-{filename}
+     - inserts artifact row, returns created artifact
+   - GET /api/artifacts
+     - public (no auth)
+     - query params: search (text), tags (comma-separated), type, limit (default 20), offset (default 0)
+     - if search param: do ilike match on title and description
+     - if tags param: filter where tags @> array
+     - returns { artifacts: Artifact[], total: number }
+   - GET /api/artifacts/:id
+     - public
+     - returns artifact with its comments array
+   - DELETE /api/artifacts/:id
+     - requireAuth, only artifact author can delete
+     - deletes from storage and database
+
+4. apps/api/src/routes/comments.ts
+   - POST /api/artifacts/:id/comments
+     - requireAuth
+     - body: { body: string }
+     - inserts comment, returns it
+
+5. apps/api/src/routes/share.ts
+   - POST /api/artifacts/:id/share
+     - requireAuth
+     - body: { expiresInHours: number } (default 24, max 168)
+     - creates share_link token, returns { token, url, expiresAt }
+   - GET /api/share/:token
+     - resolves token → checks expiry → returns artifact
+     - returns 404 if expired or not found
+
+6. apps/api/src/routes/users.ts
+   - POST /api/users — create user, returns user with api_key
+   - GET /api/users/me — requireAuth, returns current user
+
+Create apps/api/.env.example:
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+PORT=3001
+
+Add a start script in apps/api/package.json using ts-node or tsx.

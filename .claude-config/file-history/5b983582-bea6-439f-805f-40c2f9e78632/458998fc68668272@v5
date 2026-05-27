@@ -1,0 +1,9 @@
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+ANTHROPIC_API_KEY=
+PORT=3001
+HOST=0.0.0.0
+BASE_URL=http://localhost:3001
+# Restrict allowed origins in production (default: * for development)
+CORS_ORIGIN=http://localhost:3000
+# NODE_ENV is set automatically by the runtime (production/development/test)

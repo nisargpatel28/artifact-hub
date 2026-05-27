@@ -1,0 +1,35 @@
+Check what files have been changed but not committed to git:
+
+1. Run: git status
+2. Run: git diff --name-only
+
+We need to make sure ALL local fixes are committed and pushed:
+- apps/web/src/app/page.tsx (new gallery page)
+- apps/web/src/app/layout.tsx (encoding fix)
+- apps/web/src/app/global-error.tsx (new file)
+- apps/web/src/app/error.tsx
+- apps/web/postcss.config.js (CommonJS fix)
+- apps/web/next.config.js (removed standalone)
+
+3. Stage and commit everything:
+   git add -A
+   git commit -m "fix: resolve routing, encoding and config issues for Vercel deployment"
+   git push origin main
+
+4. Also create apps/web/src/app/debug/page.tsx:
+export default function DebugPage() {
+  return (
+    <div style={{ padding: 20, fontFamily: 'monospace', color: 'white', background: '#000', minHeight: '100vh' }}>
+      <h1>Env Debug</h1>
+      <p>NEXT_PUBLIC_API_URL: "{process.env.NEXT_PUBLIC_API_URL}"</p>
+    </div>
+  );
+}
+
+5. Commit and push that too:
+   git add apps/web/src/app/debug/page.tsx
+   git commit -m "debug: add env var debug page"
+   git push origin main
+
+Then wait for Vercel to redeploy automatically and visit /debug on the 
+Vercel URL to confirm the env var is set.
