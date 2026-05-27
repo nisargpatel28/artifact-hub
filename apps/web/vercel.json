@@ -1,9 +1,6 @@
 {
-  "framework": "nextjs",
   "buildCommand": "cd ../.. && pnpm --filter @artifact-hub/web build",
-  "outputDirectory": "apps/web/.next",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ]
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "framework": "nextjs"
 }
