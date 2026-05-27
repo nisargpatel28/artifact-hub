@@ -1,0 +1,35 @@
+import 'dotenv/config';
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
+import multipart from '@fastify/multipart';
+import artifactRoutes from './routes/artifacts.js';
+import commentRoutes from './routes/comments.js';
+import shareRoutes from './routes/share.js';
+import userRoutes from './routes/users.js';
+
+const app = Fastify({ logger: true });
+
+// Must be registered before any route uses request.user
+app.decorateRequest('user', null);
+
+await app.register(cors, { origin: '*' });
+await app.register(multipart);
+
+// Health check — outside /api prefix intentionally
+app.get('/health', async () => ({ status: 'ok' }));
+
+// Route plugins
+await app.register(artifactRoutes, { prefix: '/api' });
+await app.register(commentRoutes, { prefix: '/api' });
+await app.register(shareRoutes, { prefix: '/api' });
+await app.register(userRoutes, { prefix: '/api' });
+
+const port = Number(process.env.PORT ?? 3001);
+const host = process.env.HOST ?? '0.0.0.0';
+
+try {
+  await app.listen({ port, host });
+} catch (err) {
+  app.log.error(err);
+  process.exit(1);
+}

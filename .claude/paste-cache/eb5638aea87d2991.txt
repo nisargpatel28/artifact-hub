@@ -1,0 +1,27 @@
+Set up a pnpm monorepo called artifact-hub with the following structure:
+
+apps/
+  api/        - Fastify + TypeScript backend
+  web/        - Next.js 14 frontend (app router)
+  mcp/        - MCP server using @modelcontextprotocol/sdk
+packages/
+  types/      - Shared TypeScript interfaces
+
+Root files needed:
+- pnpm-workspace.yaml referencing all apps/* and packages/*
+- Root package.json with scripts: dev, build, lint
+- Root tsconfig.json with path aliases
+- .gitignore for node_modules, .env, dist, .next
+
+In packages/types/src/index.ts define these shared interfaces:
+- Artifact: { id, title, description, tags: string[], type: 'html'|'image'|'pdf', storageUrl, thumbnailUrl?, createdAt, updatedAt, authorEmail }
+- Comment: { id, artifactId, authorEmail, body, createdAt }
+- ShareLink: { token, artifactId, expiresAt, createdAt }
+- CreateArtifactDto, CreateCommentDto, CreateShareLinkDto
+
+Install in each app:
+- api: fastify, @fastify/multipart, @fastify/cors, @supabase/supabase-js, zod, dotenv
+- web: next, react, react-dom, @supabase/supabase-js, tailwindcss
+- mcp: @modelcontextprotocol/sdk, @supabase/supabase-js, zod, dotenv
+
+Show me all the files created.

@@ -1,0 +1,25 @@
+{
+  "name": "artifact-hub",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "build": "pnpm build:api && pnpm build:web && pnpm build:mcp",
+    "build:api": "pnpm --filter @artifact-hub/api build",
+    "build:web": "pnpm --filter @artifact-hub/web build",
+    "build:mcp": "pnpm --filter @artifact-hub/mcp build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm --filter @artifact-hub/api test",
+    "seed": "tsx scripts/seed.ts"
+  },
+  "devDependencies": {
+    "dotenv": "^16.6.1",
+    "tsx": "^4.22.3",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": "9.15.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

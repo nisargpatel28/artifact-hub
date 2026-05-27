@@ -1,0 +1,37 @@
+The artifact detail page shows a broken image. 
+
+1. Open browser DevTools → Network tab → find the failed image request
+   and tell me what URL it's trying to load.
+
+2. Show me apps/web/src/app/artifacts/[id]/page.tsx — specifically 
+   the image rendering part.
+
+3. Show me apps/api/src/routes/artifacts.ts — how storage_url is 
+   set after uploading to Supabase. It should use getPublicUrl:
+   
+   const { data: urlData } = supabase.storage
+     .from('artifacts')
+     .getPublicUrl(filePath)
+   const storageUrl = urlData.publicUrl
+
+4. If the image tag is using Next.js <Image> component, the domain 
+   must be whitelisted in next.config.js. Check what domain the 
+   Supabase storage URL uses (e.g. abcdefgh.supabase.co) and make 
+   sure next.config.js has:
+   
+   images: {
+     remotePatterns: [{
+       protocol: 'https',
+       hostname: '*.supabase.co',
+       pathname: '/storage/v1/object/public/**',
+     }],
+   }
+
+5. If using a plain <img> tag instead of Next.js <Image>, it should 
+   work without config — check if src is actually set correctly.
+
+6. Also check the Supabase storage bucket:
+   - Go to Supabase → Storage → artifacts bucket
+   - Make sure it is set to PUBLIC (not private)
+   - Click on one of the uploaded files and copy its public URL
+   - Try opening that URL directly in the browser — does it load?

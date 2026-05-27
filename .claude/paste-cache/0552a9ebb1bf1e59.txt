@@ -1,0 +1,30 @@
+Add tests and fix any rough edges.
+
+1. In apps/api, create src/__tests__/artifacts.test.ts using vitest:
+   - Test POST /api/artifacts requires auth (returns 401 without key)
+   - Test GET /api/artifacts returns array
+   - Test GET /api/share/:token with expired token returns 404
+   - Mock Supabase client
+
+2. In apps/api, create src/__tests__/ai.test.ts:
+   - Test generateMetadata returns defaults on API error
+   - Test summarizeFeedback returns "No feedback yet." for empty array
+
+3. Add vitest config in apps/api/package.json
+
+4. Create a root scripts/seed.ts file that:
+   - Creates the demo user if not exists
+   - Uploads 3 sample artifacts (fetch public domain images from picsum.photos)
+   - Adds 2 comments on the first artifact
+   - This lets reviewers see a populated gallery immediately
+
+5. Add error boundaries to the Next.js app:
+   - apps/web/src/app/error.tsx — global error page
+   - apps/web/src/app/not-found.tsx — 404 page
+
+6. Make sure all .env.example files are complete and accurate.
+   Add a root README.md with:
+   - What this is (2 sentences)
+   - Quick start (clone, install, copy .env, run schema, dev)
+   - How to add the MCP server to Claude Desktop
+   - Link to live deployment

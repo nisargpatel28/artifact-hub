@@ -1,0 +1,44 @@
+Create a file at apps/api/src/db/schema.sql with the full PostgreSQL schema for artifact-hub.
+
+Tables needed:
+
+1. users
+   - id uuid primary key default gen_random_uuid()
+   - email text unique not null
+   - api_key text unique not null default encode(gen_random_bytes(32), 'hex')
+   - created_at timestamptz default now()
+
+2. artifacts
+   - id uuid primary key default gen_random_uuid()
+   - title text not null
+   - description text
+   - tags text[] default '{}'
+   - type text check (type in ('html','image','pdf')) not null
+   - storage_url text not null
+   - thumbnail_url text
+   - author_email text references users(email)
+   - created_at timestamptz default now()
+   - updated_at timestamptz default now()
+
+3. comments
+   - id uuid primary key default gen_random_uuid()
+   - artifact_id uuid references artifacts(id) on delete cascade
+   - author_email text references users(email)
+   - body text not null
+   - created_at timestamptz default now()
+
+4. share_links
+   - token text primary key default encode(gen_random_bytes(16), 'hex')
+   - artifact_id uuid references artifacts(id) on delete cascade
+   - expires_at timestamptz not null
+   - created_at timestamptz default now()
+
+Also add:
+- Index on artifacts(tags) using GIN
+- Index on artifacts(type)
+- Index on artifacts(created_at desc)
+- A trigger to auto-update updated_at on artifacts
+- Insert a seed user: email='demo@artifacthub.com', api_key='demo-api-key-12345'
+
+Then create apps/api/src/db/client.ts that initializes and exports a Supabase client
+using SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from env.

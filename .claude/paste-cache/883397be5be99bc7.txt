@@ -1,0 +1,68 @@
+Build the MCP server in apps/mcp/src/index.ts using @modelcontextprotocol/sdk.
+
+The MCP server connects to the artifact-hub API (not directly to DB) via HTTP.
+Use API_BASE_URL and API_KEY from env.
+
+Create a helper: async function apiCall(method, path, body?, formData?) that:
+- Sets x-api-key header from API_KEY env
+- Handles both JSON and multipart requests
+- Throws with the error message on non-2xx
+
+Register these MCP tools:
+
+1. publish_artifact
+   Input: { title?: string, description?: string, tags?: string[], fileUrl: string, type: 'html'|'image'|'pdf' }
+   - Downloads the file from fileUrl
+   - Posts to POST /api/artifacts with the file + metadata
+   - If title/description/tags are omitted, the API will auto-generate them via AI
+   - Returns: "Artifact published! ID: {id}, Title: {title}, Tags: {tags}"
+
+2. search_artifacts
+   Input: { query?: string, tags?: string[], type?: string, limit?: number }
+   - Calls GET /api/artifacts with params
+   - Returns formatted list: "Found {n} artifacts:\n" + each as "- [{id}] {title} ({type}) - {description}"
+
+3. get_artifact
+   Input: { id: string }
+   - Calls GET /api/artifacts/:id
+   - Returns full artifact details including comment count
+
+4. add_comment
+   Input: { artifactId: string, comment: string }
+   - Posts to POST /api/artifacts/:id/comments
+   - Returns: "Comment added to '{artifact title}'"
+
+5. create_share_link
+   Input: { artifactId: string, expiresInHours?: number }
+   - Posts to POST /api/artifacts/:id/share
+   - Returns: "Share link created: {url} (expires in {hours} hours)"
+
+6. summarize_feedback
+   Input: { artifactId: string }
+   - Calls GET /api/artifacts/:id/summary
+   - Returns the summary string
+
+7. list_my_artifacts (bonus)
+   Input: none
+   - Calls GET /api/artifacts (no filter) but note this returns all public artifacts
+   - Returns the list formatted nicely
+
+Use stdio transport (McpServer with StdioServerTransport).
+
+Create apps/mcp/.env.example:
+API_BASE_URL=https://your-api.railway.app
+API_KEY=demo-api-key-12345
+
+Create apps/mcp/claude_mcp_config.json showing how to add this to Claude Desktop:
+{
+  "mcpServers": {
+    "artifact-hub": {
+      "command": "node",
+      "args": ["path/to/apps/mcp/dist/index.js"],
+      "env": {
+        "API_BASE_URL": "https://your-api.railway.app",
+        "API_KEY": "your-api-key"
+      }
+    }
+  }
+}

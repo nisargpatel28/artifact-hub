@@ -1,0 +1,60 @@
+import 'dotenv/config';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { createClient } from '@supabase/supabase-js';
+import { z } from 'zod';
+import type { Artifact } from '@artifact-hub/types';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
+
+const server = new McpServer({
+  name: 'artifact-hub',
+  version: '0.0.1',
+});
+
+server.tool(
+  'list_artifacts',
+  'List artifacts, optionally filtered by type or tag',
+  {
+    type: z.enum(['html', 'image', 'pdf']).optional(),
+    tag: z.string().optional(),
+    limit: z.number().int().min(1).max(100).default(20),
+  },
+  async ({ type, tag, limit }) => {
+    let query = supabase.from('artifacts').select('*').limit(limit);
+    if (type) query = query.eq('type', type);
+    if (tag) query = query.contains('tags', [tag]);
+
+    const { data, error } = await query;
+    if (error) return { content: [{ type: 'text', text: `Error: ${error.message}` }] };
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(data as Artifact[], null, 2) }],
+    };
+  },
+);
+
+server.tool(
+  'get_artifact',
+  'Get a single artifact by ID',
+  { id: z.string().uuid() },
+  async ({ id }) => {
+    const { data, error } = await supabase
+      .from('artifacts')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) return { content: [{ type: 'text', text: `Error: ${error.message}` }] };
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(data as Artifact, null, 2) }],
+    };
+  },
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
