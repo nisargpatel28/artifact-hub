@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { useApiKey } from '@/contexts/ApiKeyContext';
+import { useLike } from '@/hooks/useLike';
 import type { Artifact, Comment } from '@artifact-hub/types';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -107,6 +108,23 @@ function ShareModal({
         </div>
       </div>
     </div>
+  );
+}
+
+function LikeButton({ artifactId }: { artifactId: string }) {
+  const { liked, likeCount, toggleLike } = useLike(artifactId);
+
+  return (
+    <button
+      onClick={toggleLike}
+      aria-label={liked ? 'Unlike' : 'Like'}
+      className={`flex items-center gap-1.5 text-sm transition-all duration-100 active:scale-90 ${
+        liked ? 'text-rose-500' : 'text-zinc-500'
+      }`}
+    >
+      <span>{liked ? '❤️' : '🤍'}</span>
+      <span>{likeCount}</span>
+    </button>
   );
 }
 
@@ -271,9 +289,12 @@ export default function ArtifactDetailPage() {
                 </div>
               )}
 
-              <p className="mt-4 text-xs text-zinc-600">
-                by <span className="text-zinc-500">{artifact.authorEmail}</span>
-              </p>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <p className="text-xs text-zinc-600">
+                  by <span className="text-zinc-500">{artifact.authorEmail}</span>
+                </p>
+                <LikeButton artifactId={artifact.id} />
+              </div>
             </div>
 
             {/* Actions */}
