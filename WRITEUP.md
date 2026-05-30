@@ -96,6 +96,16 @@ Both functions share the same Anthropic client instance initialised once at modu
 
 ---
 
+## AI Tools Used
+
+**Claude Code (CLI)** was used for all code generation and debugging throughout this project. Every file in the codebase — API routes, database schema, frontend components, MCP tools, Dockerfiles, seed scripts, and configuration — was written or substantially revised through Claude Code. Debugging sessions covered TypeScript compiler errors, runtime crashes, Supabase RLS violations, Next.js module resolution issues, UTF-8 encoding problems, and MCP stdio transport behavior.
+
+**Claude.ai (chat)** was used in the planning phase to work through architecture decisions before writing any code: choosing between tRPC and a plain REST API, deciding on the Supabase-as-backend-of-record model, and scoping what the MCP tools should expose versus what should stay server-side.
+
+**Session logs** from the Claude Code build sessions are included in the `claude-sessions/` folder at the repo root. These are the raw conversation transcripts showing the iterative debugging process — including dead ends, wrong assumptions corrected mid-session, and the reasoning behind non-obvious decisions like the `rootDir` fix for TypeScript output paths and the ESM-vs-CommonJS resolution for the MCP server.
+
+---
+
 ## What I'd Do Next
 
 **Row-level security and proper auth.** The current API-key model is fine for a demo but would not survive production. The right path is Supabase Auth (magic links or OAuth) returning JWTs, with Supabase RLS policies replacing the application-level ownership checks in the route handlers. The `users` table already maps emails to API keys, so migration is mostly additive — add an `auth_id` column, update `requireAuth` to verify JWTs, and move the ownership checks into `CREATE POLICY` statements.
