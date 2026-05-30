@@ -1,11 +1,31 @@
+'use client';
+
 import Link from 'next/link';
 import type { Artifact } from '@artifact-hub/types';
+import { useLike } from '@/hooks/useLike';
 
 const TYPE_BADGE: Record<Artifact['type'], string> = {
   html:  'border-blue-500/30  bg-blue-500/10  text-blue-400',
   image: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
   pdf:   'border-rose-500/30  bg-rose-500/10  text-rose-400',
 };
+
+function LikeButton({ artifactId }: { artifactId: string }) {
+  const { liked, likeCount, toggleLike } = useLike(artifactId);
+
+  return (
+    <button
+      onClick={e => { e.preventDefault(); e.stopPropagation(); toggleLike(); }}
+      aria-label={liked ? 'Unlike' : 'Like'}
+      className={`flex items-center gap-1 text-xs transition-all duration-100 active:scale-90 ${
+        liked ? 'text-rose-500' : 'text-zinc-500'
+      }`}
+    >
+      <span>{liked ? '❤️' : '🤍'}</span>
+      <span>{likeCount}</span>
+    </button>
+  );
+}
 
 interface Props {
   artifact: Artifact;
@@ -40,9 +60,9 @@ export function ArtifactCard({ artifact }: Props) {
           </p>
         )}
 
-        {/* Tags */}
-        {artifact.tags.length > 0 && (
-          <footer className="mt-auto flex flex-wrap gap-1 pt-4">
+        {/* Bottom row: tags + like */}
+        <footer className="mt-auto flex items-end justify-between gap-2 pt-4">
+          <div className="flex flex-wrap gap-1">
             {artifact.tags.slice(0, 4).map((tag) => (
               <span key={tag} className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400">
                 {tag}
@@ -53,8 +73,10 @@ export function ArtifactCard({ artifact }: Props) {
                 +{artifact.tags.length - 4}
               </span>
             )}
-          </footer>
-        )}
+          </div>
+          <LikeButton artifactId={artifact.id} />
+        </footer>
+
       </article>
     </Link>
   );
